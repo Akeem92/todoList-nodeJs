@@ -1,8 +1,9 @@
-exports.getHome = (req, res, next) => {
-  console.log(process.env.name);
+const moment = require("moment");
 
-  return res.render("home", {
-    name: process.env,
-    nomPage: "Acceuil",
-  });
+exports.getHome = (req, res, next) => {
+    return res.render("home", {
+        name: process.env.name,
+        nomPage: "Acceuil",
+        jour: moment().locale('fr').format('LLLL')
+    });
 };
