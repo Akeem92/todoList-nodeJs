@@ -5,8 +5,11 @@ const expressLayouts = require("express-ejs-layouts");
 const bodyParser = require("body-parser");
 
 const todoRouters = require("./src/routes/todo_router");
+const runDB = require('./config/db')
 
 const createServer = () => {
+  runDB()
+  
   //On initialise express
   const app = express();
 
