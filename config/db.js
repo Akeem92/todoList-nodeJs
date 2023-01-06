@@ -1,26 +1,23 @@
 require("dotenv").config();
-const mysql = require("mysql");
+const { Sequelize } = require("sequelize");
 
 require("colors");
 
-function runDB() {
-    const connection = mysql.createConnection({
-        host: "localhost://db:3306",
-        user: "root",
-        password: "root",
-        database: "todoList",
+async function runDB() {
+    const sequelize = new Sequelize("todoList", "root", "root", {
+        host: "",
+        dialect: "mysql",
     });
 
-    connection.connect((err) => {
-        if (err) {
-            console.log(`Mysql default connection has occured: ${err} error`.red);
-            return;
-        }
-        console.log(`Mysql default connection is open to 192.168.1.70`.green);
-    });
+    try {
+        await sequelize.authenticate();
+        console.log(`Connection has been established succefully.`.green);
+    } catch (error) {
+        console.log(`Unable to connect to the database: `.red);
+    }
 
     process.on("SIGINT", () => {
-        connection.end(() => {
+        sequelize.close(() => {
             console.log(`Mysql default connection is disconnected due to application termination`.magenta);
             process.exit(0);
         });
