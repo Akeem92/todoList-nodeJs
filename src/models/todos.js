@@ -16,8 +16,12 @@ const todosSchema = new Schema({
     status: {
         type: Number,
         required: true,
-        enum: [1, 2, 3],
         trim: true,
+    },
+    date: {
+        type: Date,
+        required: true,
+        default: Date.now,
     },
     date_create: {
         type: Date,
