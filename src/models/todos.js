@@ -1,40 +1,33 @@
-const { DataTypes, Model } = require("sequelize");
-const db = require("../../config/db");
+const mongoose = require("mongoose");
 
-class Todos extends Model {
-    static init(sequelize) {
-        super.init(
-            {
-                id: {
-                    type: DataTypes.INTEGER,
-                    autoIncrement: true,
-                    primaryKey: true,
-                    allowNull: false,
-                },
-                titre: {
-                    type: DataTypes.STRING,
-                    allowNull: false,
-                },
-                description: {
-                    type: DataTypes.TEXT,
-                    allowNull: false,
-                },
-                status: {
-                    type: DataTypes.INTEGER,
-                    allowNull: false,
-                },
-                date_create: {
-                    type: DataTypes.DATE,
-                    allowNull: false,
-                },
-                date_update: {
-                    type: DataTypes.DATE,
-                    allowNull: true,
-                },
-            },
-            { sequelize }
-        );
-    }
-}
+const Schema = mongoose.Schema;
 
-module.exports = Todos;
+const todosSchema = new Schema({
+    title: {
+        type: String,
+        required: true,
+        trim: true,
+    },
+    description: {
+        type: String,
+        required: true,
+        trim: true,
+    },
+    status: {
+        type: Number,
+        required: true,
+        enum: [1, 2, 3],
+        trim: true,
+    },
+    date_create: {
+        type: Date,
+        required: true,
+        default: Date.now,
+    },
+    date_update: {
+        type: Date,
+        required: false,
+    },
+});
+
+module.exports = mongoose.model("Todos", todosSchema);

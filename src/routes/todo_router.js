@@ -2,7 +2,7 @@ const express = require("express");
 
 const router = express.Router();
 
-const todoRouter = require("../modules/todo/todoRouter");
+const todoRouter = require("../modules/todos/todosRouter");
 
 router.use("/", todoRouter);
 
