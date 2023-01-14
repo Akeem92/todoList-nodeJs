@@ -17,18 +17,70 @@
     <body>
         <script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
         <script>
+            function compare_date(date) {
+                let date_compare = new Date(date).getTime();
+                let now_date = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+
+                if (date_compare >= now_date) {
+                    return true;
+                } else return false;
+            }
+
             function add_task() {
-                const today = new Date();
                 var titre = $("#titre").val();
                 var description = $("#description").val();
-                var date = Date($("#date").val());
+                var date = new Date($("#date").val());
 
-                console.log(Date.parse(today));
-                console.log(Date.parse(date));
-
-                if (titre != "" && description != "" && Date.parse(date) >= Date.parse(today)) {
-                    alert("ko");
+                if (titre != "" && description != "") {
+                    if (compare_date(date)) {
+                        $.ajax({
+                            url: "/v1/acceuil",
+                            method: "POST",
+                            contentType: "application/json",
+                            data: JSON.stringify({
+                                titre: titre,
+                                description: description,
+                                date: date,
+                            }),
+                            success: (result) => {
+                                if (result.status == "000") {
+                                    location.reload();
+                                } else {
+                                    $("#error_message").html("Erreur de sauvegarde de la tâche.");
+                                    $("#error_message").show().delay(2000).fadeOut();
+                                }
+                            },
+                        });
+                    } else {
+                        $("#error_message").html("La date entrée doit être supérieure ou égale à la date du jours");
+                        $("#error_message").show().delay(2000).fadeOut();
+                    }
+                } else {
+                    $("#error_message").html("Veuillez remplir tous les champs du formulaire");
+                    $("#error_message").show().delay(2000).fadeOut();
                 }
+            }
+
+            function update(id) {
+                $.ajax({
+                    url: "/v1/update",
+                    type: "POST",
+                    data: JSON.stringify({
+                        id: id,
+                    }),
+                    success: (result) => {
+                        if (result.status == "000") {
+                            //On remet les informations des gens dans le modal
+                            let todo = result.data;
+
+                            $("#titre").val(todo.titre);
+                            $("#description").val(todo.description);
+                            $("#date").val(todo.date);
+                        } else {
+                            $(".modal").hide();
+                        }
+                    },
+                });
             }
         </script>
         <!-- Modal_FORM -->
@@ -37,6 +89,8 @@
                 <div class="modal-content">
                     <div class="modal-body">
                         <div class="container">
+                            <div id="error_message" class="row" style="color: red; display: none"></div>
+                            <br />
                             <div class="row">
                                 <input type="text" class="form-control" name="titre" id="titre" placeholder="Nom de la tâche" style="font-size: x-large; font-weight: bold" />
                             </div>
@@ -99,7 +153,9 @@
                             </div>
                         </div>
                         <div class="text-center col-2 pt-2">
-                            <button class="btn btn-primary" title="Modifier"><i class="bi bi-pencil" style="font-size: 15px"></i></button>
+                            <button class="btn btn-primary" title="Modifier" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="update('<%= todo._id %>')">
+                                <i class="bi bi-pencil" style="font-size: 15px"></i>
+                            </button>
                             <button class="btn btn-danger" title="Supprimer"><i class="bi bi-trash3" style="font-size: 15px"></i></button>
                         </div>
                     </div>

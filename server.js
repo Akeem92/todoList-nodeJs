@@ -14,6 +14,21 @@ const createServer = () => {
     //On initialise express
     const app = express();
 
+    //Middleware configuration
+    app.use(
+        bodyParser.json({
+            limit: "50mb",
+        })
+    );
+
+    app.use(
+        bodyParser.urlencoded({
+            limit: "50mb",
+            extended: true,
+            parameterLimit: 500000,
+        })
+    );
+
     //View set configuration
     app.set("view engine", "ejs");
     app.set("views", path.join(__dirname, "src", "views"));
